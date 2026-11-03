@@ -1,1 +1,180 @@
-export { w as BuildEnvironment, b as DevEnvironment, t as Visitor, T as build, U as buildErrorMessage, E as createBuilder, u as createFetchableDevEnvironment, X as createFilter, k as createIdResolver, H as createLogger, v as createRunnableDevEnvironment, N as createServer, M as createServerHotChannel, B as createServerModuleRunner, V as createServerModuleRunnerTransport, ut as defaultAllowedOrigins, it as defaultClientConditions, at as defaultClientMainFields, ot as defaultExternalConditions, st as defaultServerConditions, ct as defaultServerMainFields, p as defineConfig, n as esbuildVersion, r as esmExternalRequirePlugin, x as fetchModule, D as formatPostcssSourceMap, Z as isCSSRequest, d as isFetchableDevEnvironment, I as isFileLoadingAllowed, L as isFileServingAllowed, y as isRunnableDevEnvironment, m as loadConfigFromFile, q as loadEnv, Q as mergeAlias, $ as mergeConfig, i as minify, a as minifySync, z as moduleRunnerTransform, et as normalizePath, A as optimizeDeps, o as parse, s as parseAst, c as parseAstAsync, l as parseSync, Y as perEnvironmentPlugin, K as perEnvironmentState, O as preprocessCSS, S as preview, h as resolveConfig, J as resolveEnvPrefix, tt as rolldownVersion, nt as rollupVersion, _ as runnerImport, F as searchForWorkspaceRoot, R as send, g as sortUserPlugins, G as transformWithEsbuild, W as transformWithOxc, lt as version, rt as withFilter } from "./chunks/node.js";
+import { jsx } from 'react/jsx-runtime';
+import { forwardRef, useRef, useEffect } from 'react';
+import { Chart as Chart$1, LineController, BarController, RadarController, DoughnutController, PolarAreaController, BubbleController, PieController, ScatterController } from 'chart.js';
+
+const defaultDatasetIdKey = 'label';
+function reforwardRef(ref, value) {
+    if (typeof ref === 'function') {
+        ref(value);
+    } else if (ref) {
+        ref.current = value;
+    }
+}
+function setOptions(chart, nextOptions) {
+    const options = chart.options;
+    if (options && nextOptions) {
+        Object.assign(options, nextOptions);
+    }
+}
+function setLabels(currentData, nextLabels) {
+    currentData.labels = nextLabels;
+}
+function setDatasets(currentData, nextDatasets, datasetIdKey = defaultDatasetIdKey) {
+    const addedDatasets = [];
+    currentData.datasets = nextDatasets.map((nextDataset)=>{
+        // given the new set, find it's current match
+        const currentDataset = currentData.datasets.find((dataset)=>dataset[datasetIdKey] === nextDataset[datasetIdKey]);
+        // There is no original to update, so simply add new one
+        if (!currentDataset || !nextDataset.data || addedDatasets.includes(currentDataset)) {
+            return {
+                ...nextDataset
+            };
+        }
+        addedDatasets.push(currentDataset);
+        Object.assign(currentDataset, nextDataset);
+        return currentDataset;
+    });
+}
+function cloneData(data, datasetIdKey = defaultDatasetIdKey) {
+    const nextData = {
+        labels: [],
+        datasets: []
+    };
+    setLabels(nextData, data.labels);
+    setDatasets(nextData, data.datasets, datasetIdKey);
+    return nextData;
+}
+/**
+ * Get dataset from mouse click event
+ * @param chart - Chart.js instance
+ * @param event - Mouse click event
+ * @returns Dataset
+ */ function getDatasetAtEvent(chart, event) {
+    return chart.getElementsAtEventForMode(event.nativeEvent, 'dataset', {
+        intersect: true
+    }, false);
+}
+/**
+ * Get single dataset element from mouse click event
+ * @param chart - Chart.js instance
+ * @param event - Mouse click event
+ * @returns Dataset
+ */ function getElementAtEvent(chart, event) {
+    return chart.getElementsAtEventForMode(event.nativeEvent, 'nearest', {
+        intersect: true
+    }, false);
+}
+/**
+ * Get all dataset elements from mouse click event
+ * @param chart - Chart.js instance
+ * @param event - Mouse click event
+ * @returns Dataset
+ */ function getElementsAtEvent(chart, event) {
+    return chart.getElementsAtEventForMode(event.nativeEvent, 'index', {
+        intersect: true
+    }, false);
+}
+
+function ChartComponent(props, ref) {
+    const { height = 150, width = 300, redraw = false, datasetIdKey, type, data, options, plugins = [], fallbackContent, updateMode, ...canvasProps } = props;
+    const canvasRef = useRef(null);
+    const chartRef = useRef(null);
+    const renderChart = ()=>{
+        if (!canvasRef.current) return;
+        chartRef.current = new Chart$1(canvasRef.current, {
+            type,
+            data: cloneData(data, datasetIdKey),
+            options: options && {
+                ...options
+            },
+            plugins
+        });
+        reforwardRef(ref, chartRef.current);
+    };
+    const destroyChart = ()=>{
+        reforwardRef(ref, null);
+        if (chartRef.current) {
+            chartRef.current.destroy();
+            chartRef.current = null;
+        }
+    };
+    useEffect(()=>{
+        if (!redraw && chartRef.current && options) {
+            setOptions(chartRef.current, options);
+        }
+    }, [
+        redraw,
+        options
+    ]);
+    useEffect(()=>{
+        if (!redraw && chartRef.current) {
+            setLabels(chartRef.current.config.data, data.labels);
+        }
+    }, [
+        redraw,
+        data.labels
+    ]);
+    useEffect(()=>{
+        if (!redraw && chartRef.current && data.datasets) {
+            setDatasets(chartRef.current.config.data, data.datasets, datasetIdKey);
+        }
+    }, [
+        redraw,
+        data.datasets
+    ]);
+    useEffect(()=>{
+        if (!chartRef.current) return;
+        if (redraw) {
+            destroyChart();
+            setTimeout(renderChart);
+        } else {
+            chartRef.current.update(updateMode);
+        }
+    }, [
+        redraw,
+        options,
+        data.labels,
+        data.datasets,
+        updateMode
+    ]);
+    useEffect(()=>{
+        if (!chartRef.current) return;
+        destroyChart();
+        setTimeout(renderChart);
+    }, [
+        type
+    ]);
+    useEffect(()=>{
+        renderChart();
+        return ()=>destroyChart();
+    }, []);
+    return /*#__PURE__*/ jsx("canvas", {
+        ref: canvasRef,
+        role: "img",
+        height: height,
+        width: width,
+        ...canvasProps,
+        children: fallbackContent
+    });
+}
+const Chart = /*#__PURE__*/ forwardRef(ChartComponent);
+
+function createTypedChart(type, registerables) {
+    Chart$1.register(registerables);
+    return /*#__PURE__*/ forwardRef((props, ref)=>/*#__PURE__*/ jsx(Chart, {
+            ...props,
+            ref: ref,
+            type: type
+        }));
+}
+const Line = /* #__PURE__ */ createTypedChart('line', LineController);
+const Bar = /* #__PURE__ */ createTypedChart('bar', BarController);
+const Radar = /* #__PURE__ */ createTypedChart('radar', RadarController);
+const Doughnut = /* #__PURE__ */ createTypedChart('doughnut', DoughnutController);
+const PolarArea = /* #__PURE__ */ createTypedChart('polarArea', PolarAreaController);
+const Bubble = /* #__PURE__ */ createTypedChart('bubble', BubbleController);
+const Pie = /* #__PURE__ */ createTypedChart('pie', PieController);
+const Scatter = /* #__PURE__ */ createTypedChart('scatter', ScatterController);
+
+export { Bar, Bubble, Chart, Doughnut, Line, Pie, PolarArea, Radar, Scatter, getDatasetAtEvent, getElementAtEvent, getElementsAtEvent };
+//# sourceMappingURL=index.js.map
