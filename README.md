@@ -1,21 +1,37 @@
-# picocolors
+# `react`
 
-The tiniest and the fastest library for terminal output formatting with ANSI colors.
+React is a JavaScript library for creating user interfaces.
 
-```javascript
-import pc from "picocolors"
+The `react` package contains only the functionality necessary to define React components. It is typically used together with a React renderer like `react-dom` for the web, or `react-native` for the native environments.
 
-console.log(
-  pc.green(`How are ${pc.italic(`you`)} doing?`)
-)
+**Note:** by default, React will be in development mode. The development version includes extra warnings about common mistakes, whereas the production version includes extra performance optimizations and strips all error messages. Don't forget to use the [production build](https://reactjs.org/docs/optimizing-performance.html#use-the-production-build) when deploying your application.
+
+## Usage
+
+```js
+import { useState } from 'react';
+import { createRoot } from 'react-dom/client';
+
+function Counter() {
+  const [count, setCount] = useState(0);
+  return (
+    <>
+      <h1>{count}</h1>
+      <button onClick={() => setCount(count + 1)}>
+        Increment
+      </button>
+    </>
+  );
+}
+
+const root = createRoot(document.getElementById('root'));
+root.render(<Counter />);
 ```
 
-- **No dependencies.**
-- **14 times** smaller and **2 times** faster than chalk.
-- Used by popular tools like PostCSS, SVGO, Stylelint, and Browserslist.
-- Node.js v6+ & browsers support. Support for both CJS and ESM projects.
-- TypeScript type declarations included.
-- [`NO_COLOR`](https://no-color.org/) friendly.
+## Documentation
 
-## Docs
-Read **[full docs](https://github.com/alexeyraspopov/picocolors#readme)** on GitHub.
+See https://react.dev/
+
+## API
+
+See https://react.dev/reference/react

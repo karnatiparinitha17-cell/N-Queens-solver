@@ -1,30 +1,30 @@
-/* eslint-disable @typescript-eslint/ban-types */
-
-// DeepPartial implementation taken from the utility-types NPM package, which is
-// Copyright (c) 2016 Piotr Witek <piotrek.witek@gmail.com> (http://piotrwitek.github.io)
-// and used under the terms of the MIT license
-export type DeepPartial<T> = T extends Function
-  ? T
-  : T extends Array<infer U>
-    ? _DeepPartialArray<U>
-    : T extends object
-      ? _DeepPartialObject<T>
-      : T | undefined;
-
-type _DeepPartialArray<T> = Array<DeepPartial<T>>
-type _DeepPartialObject<T> = { [P in keyof T]?: DeepPartial<T[P]> };
-
-export type DistributiveArray<T> = [T] extends [unknown] ? Array<T> : never
-
-// https://stackoverflow.com/a/50375286
-export type UnionToIntersection<U> = (U extends unknown ? (k: U) => void : never) extends (k: infer I) => void ? I : never;
-
-export type AllKeys<T> = T extends any ? keyof T : never;
-
-export type PickType<T, K extends AllKeys<T>> = T extends { [k in K]?: any }
-  ? T[K]
-  : undefined;
-
-export type Merge<T extends object> = {
-  [k in AllKeys<T>]: PickType<T, k>;
-};
+import type { MouseEvent } from 'react';
+import type { ChartType, ChartData, DefaultDataPoint, ChartDataset, ChartOptions, Chart } from 'chart.js';
+import type { ForwardedRef } from './types.js';
+export declare function reforwardRef<T>(ref: ForwardedRef<T>, value: T): void;
+export declare function setOptions<TType extends ChartType = ChartType, TData = DefaultDataPoint<TType>, TLabel = unknown>(chart: Chart<TType, TData, TLabel>, nextOptions: ChartOptions<TType>): void;
+export declare function setLabels<TType extends ChartType = ChartType, TData = DefaultDataPoint<TType>, TLabel = unknown>(currentData: ChartData<TType, TData, TLabel>, nextLabels: TLabel[] | undefined): void;
+export declare function setDatasets<TType extends ChartType = ChartType, TData = DefaultDataPoint<TType>, TLabel = unknown>(currentData: ChartData<TType, TData, TLabel>, nextDatasets: ChartDataset<TType, TData>[], datasetIdKey?: string): void;
+export declare function cloneData<TType extends ChartType = ChartType, TData = DefaultDataPoint<TType>, TLabel = unknown>(data: ChartData<TType, TData, TLabel>, datasetIdKey?: string): ChartData<TType, TData, TLabel>;
+/**
+ * Get dataset from mouse click event
+ * @param chart - Chart.js instance
+ * @param event - Mouse click event
+ * @returns Dataset
+ */
+export declare function getDatasetAtEvent(chart: Chart, event: MouseEvent<HTMLCanvasElement>): import("chart.js").InteractionItem[];
+/**
+ * Get single dataset element from mouse click event
+ * @param chart - Chart.js instance
+ * @param event - Mouse click event
+ * @returns Dataset
+ */
+export declare function getElementAtEvent(chart: Chart, event: MouseEvent<HTMLCanvasElement>): import("chart.js").InteractionItem[];
+/**
+ * Get all dataset elements from mouse click event
+ * @param chart - Chart.js instance
+ * @param event - Mouse click event
+ * @returns Dataset
+ */
+export declare function getElementsAtEvent(chart: Chart, event: MouseEvent<HTMLCanvasElement>): import("chart.js").InteractionItem[];
+//# sourceMappingURL=utils.d.ts.map
