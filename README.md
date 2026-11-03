@@ -1,37 +1,20 @@
-# `react`
+# Vite ⚡
 
-React is a JavaScript library for creating user interfaces.
+> Next Generation Frontend Tooling
 
-The `react` package contains only the functionality necessary to define React components. It is typically used together with a React renderer like `react-dom` for the web, or `react-native` for the native environments.
+- 💡 Instant Server Start
+- ⚡️ Lightning Fast HMR
+- 🛠️ Rich Features
+- 📦 Optimized Build
+- 🔩 Universal Plugin Interface
+- 🔑 Fully Typed APIs
 
-**Note:** by default, React will be in development mode. The development version includes extra warnings about common mistakes, whereas the production version includes extra performance optimizations and strips all error messages. Don't forget to use the [production build](https://reactjs.org/docs/optimizing-performance.html#use-the-production-build) when deploying your application.
+Vite (French word for "quick", pronounced [`/viːt/`](https://cdn.jsdelivr.net/gh/vitejs/vite@main/docs/public/vite.mp3), like "veet") is a build tool that aims to provide a faster and leaner development experience for modern web projects. It consists of two major parts:
 
-## Usage
+- A dev server that provides [rich feature enhancements](https://vite.dev/guide/features) over [native ES modules](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules), for example extremely fast [Hot Module Replacement (HMR)](https://vite.dev/guide/features#hot-module-replacement).
 
-```js
-import { useState } from 'react';
-import { createRoot } from 'react-dom/client';
+- A build command that bundles your code with [Rolldown](https://rolldown.rs), pre-configured to output highly optimized static assets for production.
 
-function Counter() {
-  const [count, setCount] = useState(0);
-  return (
-    <>
-      <h1>{count}</h1>
-      <button onClick={() => setCount(count + 1)}>
-        Increment
-      </button>
-    </>
-  );
-}
+In addition, Vite is highly extensible via its [Plugin API](https://vite.dev/guide/api-plugin.html) and [JavaScript API](https://vite.dev/guide/api-javascript.html) with full typing support.
 
-const root = createRoot(document.getElementById('root'));
-root.render(<Counter />);
-```
-
-## Documentation
-
-See https://react.dev/
-
-## API
-
-See https://react.dev/reference/react
+[Read the Docs to Learn More](https://vite.dev).
